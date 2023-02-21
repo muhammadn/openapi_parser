@@ -5,11 +5,13 @@ class OpenAPIParser::RequestOperation
     # @param [OpenAPIParser::Config] config
     # @param [OpenAPIParser::PathItemFinder] path_item_finder
     # @return [OpenAPIParser::RequestOperation, nil]
-    def create(http_method, request_path, path_item_finder, config)
+    def create(http_method, request_path, path_item_finder, config, security_scheme)
       result = path_item_finder.operation_object(http_method, request_path)
       return nil unless result
 
-      self.new(http_method, result, config)
+      #security = security_scheme.security_scheme_object
+
+      self.new(http_method, result, config, security_scheme)
     end
   end
 
@@ -25,18 +27,19 @@ class OpenAPIParser::RequestOperation
   #   @return [String]
   # @!attribute [r] path_item
   #   @return [OpenAPIParser::Schemas::PathItem]
-  attr_reader :operation_object, :path_params, :config, :http_method, :original_path, :path_item
+  attr_reader :security_scheme_object, :operation_object, :path_params, :config, :http_method, :original_path, :path_item
 
   # @param [String] http_method
   # @param [OpenAPIParser::PathItemFinder::Result] result
   # @param [OpenAPIParser::Config] config
-  def initialize(http_method, result, config)
+  def initialize(http_method, result, config, test)
     @http_method = http_method.to_s
     @original_path = result.original_path
     @operation_object = result.operation_object
     @path_params = result.path_params || {}
     @path_item = result.path_item_object
     @config = config
+    @security_scheme_object = test
   end
 
   def validate_path_params(options = nil)
@@ -50,6 +53,8 @@ class OpenAPIParser::RequestOperation
   def validate_request_body(content_type, params, options = nil)
     options ||= config.request_body_options
     operation_object&.validate_request_body(content_type, params, options)
+    puts "security schema object: #{security_scheme_object.inspect}"
+    puts "request_operation_object: #{@operation_object.inspect}"
   end
 
   # @param [OpenAPIParser::RequestOperation::ValidatableResponseBody] response_body

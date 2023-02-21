@@ -12,6 +12,7 @@ module OpenAPIParser::Schemas
       @config = config
       @uri = uri
       @schema_registry = schema_registry
+      @security_schemes = OpenAPIParser::SecuritySchemes.new(info)
 
       # schema_registery is shared among schemas, and prevents a schema from being loaded multiple times
       schema_registry[uri] = self if uri
@@ -29,15 +30,20 @@ module OpenAPIParser::Schemas
     #   @return [Components, nil]
     openapi_attr_object :components, Components, reference: false
 
+    # @!attribute [r] info
+    #   @return [Info, nil]
+    openapi_attr_object :info, Info, reference: false
+
     # @return [OpenAPIParser::RequestOperation, nil]
     def request_operation(http_method, request_path)
-      OpenAPIParser::RequestOperation.create(http_method, request_path, @path_item_finder, @config)
+      OpenAPIParser::RequestOperation.create(http_method, request_path, @path_item_finder, @config, @security_schemes)
     end
 
     # load another schema with shared config and schema_registry
     # @return [OpenAPIParser::Schemas::OpenAPI]
     def load_another_schema(uri)
       resolved_uri = resolve_uri(uri)
+      puts "resolved uri: #{resolved_uri}"
       return if resolved_uri.nil?
 
       loaded = @schema_registry[resolved_uri]
