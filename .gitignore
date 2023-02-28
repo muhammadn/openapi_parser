@@ -6,6 +6,7 @@
 /pkg/
 /spec/reports/
 /tmp/
+openapi_parser_firetail-*.gem
 
 # RubyMine
 .idea
