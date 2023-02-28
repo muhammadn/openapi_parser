@@ -3,7 +3,7 @@ $LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
 require 'openapi_parser/version'
 
 Gem::Specification.new do |spec|
-  spec.name          = 'openapi_parser'
+  spec.name          = 'openapi_parser_firetail'
   spec.version       = OpenAPIParser::VERSION
   spec.authors       = ['ota42y']
   spec.email         = ['ota42y@gmail.com']
